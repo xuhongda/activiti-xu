@@ -1,22 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
-
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/mybatis_springboot" />
-        <property name="jdbcDriver" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUsername" value="root" />
-        <property name="jdbcPassword" value="123456" />
-
-        <property name="databaseSchemaUpdate" value="true" />
-
-        <property name="asyncExecutorActivate" value="false" />
-
-        <property name="mailServerHost" value="mail.my-corp.com" />
-        <property name="mailServerPort" value="5025" />
-    </bean>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
+        <context:property-placeholder location="classpath:db.properties"/>
+
+        <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+            <property name="driverClassName" value="${jdbc.driverClassName}"/>
+            <property name="url" value="${jdbc.url}"/>
+            <property name="username" value="${jdbc.username}"/>
+            <property name="password" value="${jdbc.password}"/>
+            <property name="defaultAutoCommit" value="false"/>
+        </bean>
+
+
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+            <property name="dataSource" ref="dataSource"/>
+        </bean>
+
+        <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="transactionManager" ref="transactionManager"/>
+            <property name="databaseSchemaUpdate" value="true"/>
+            <property name="asyncExecutorActivate" value="false"/>
+        </bean>
+
+        <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+            <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
+        </bean>
+
+        <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
+        <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService"/>
+        <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService"/>
+        <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService"/>
+        <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService"/>
+
+
+    </beans>
 </beans>
