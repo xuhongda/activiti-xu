@@ -34,6 +34,8 @@ public class DeployBpmn {
     private HistoryService historyService;
     @Autowired
     private ManagementService managementService;
+    @Autowired
+    private RuntimeService runtimeService;
 
     /**
      * 部署一个流程
@@ -66,13 +68,53 @@ public class DeployBpmn {
         log.info("Number of process instances: " + runtimeService.createProcessInstanceQuery().count());
     }
 
+    /**
+     * 查看任务
+     */
     @Test
     public void task() {
         // Fetch all tasks for the management group
         TaskService taskService = processEngine.getTaskService();
         List<Task> tasks = taskService.createTaskQuery().taskCandidateGroup("management").list();
+        // List<Task> list = taskService.createTaskQuery().list();
         for (Task task : tasks) {
             log.info("Task available: " + task.getName());
         }
+    }
+
+    /**
+     * 执行审批
+     */
+    @Test
+    public void complete() {
+
+        TaskService taskService = processEngine.getTaskService();
+        List<Task> tasks = taskService.createTaskQuery().taskCandidateGroup("management").list();
+        for (Task task : tasks) {
+            log.info("Task available: " + task.getName());
+        }
+
+        Task task = tasks.get(0);
+
+        Map<String, Object> taskVariables = new HashMap<>();
+        taskVariables.put("vacationApproved", "false");
+        taskVariables.put("managerMotivation", "We have a tight deadline!");
+        taskService.complete(task.getId(), taskVariables);
+
+    }
+
+    /**
+     * 暂停一个任务,任务被暂停又被开启，会抛出异常
+     */
+    @Test
+    public void suspended() {
+        repositoryService.suspendProcessDefinitionByKey("vacationRequest");
+        try {
+            runtimeService.startProcessInstanceByKey("vacationRequest");
+        } catch (ActivitiException e) {
+            e.printStackTrace();
+        }
+        //需要用 activateProcessDefinitionXXX 激活
+        repositoryService.activateProcessDefinitionByKey("vacationRequest");
     }
 }
