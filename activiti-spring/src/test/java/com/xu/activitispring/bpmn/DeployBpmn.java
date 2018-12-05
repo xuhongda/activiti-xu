@@ -2,6 +2,7 @@ package com.xu.activitispring.bpmn;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,18 @@ public class DeployBpmn {
     @Autowired
     private RuntimeService runtimeService;
 
+
+    @Test
+    public void info() {
+        //创建基于内存数据库的流程引擎对象
+        ProcessEngineConfiguration standaloneInMemProcessEngineConfiguration = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration();
+        ProcessEngine processEngine = standaloneInMemProcessEngineConfiguration.buildProcessEngine();
+        String name = processEngine.getName();
+        String version = ProcessEngine.VERSION;
+        log.info("流程引擎名称{}，流程引擎模板{}", name, version);
+
+    }
+
     /**
      * 部署一个流程
      */
@@ -44,10 +58,15 @@ public class DeployBpmn {
     public void dy() {
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         RepositoryService repositoryService = processEngine.getRepositoryService();
-        repositoryService.createDeployment()
+        Deployment deploy = repositoryService.createDeployment()
                 .addClasspathResource("bpmn/myOne.bpmn20.xml")
                 .deploy();
 
+        String name = deploy.getName();
+        Date deploymentTime = deploy.getDeploymentTime();
+        String id = deploy.getId();
+
+        log.info("流程名称：{},流程部署时间：{},流程ID:{}", name, deploymentTime, id);
         log.info("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());
     }
 
@@ -80,6 +99,7 @@ public class DeployBpmn {
         for (Task task : tasks) {
             log.info("Task available: " + task.getName());
         }
+        log.info("任务数量{}", tasks.size());
     }
 
     /**
