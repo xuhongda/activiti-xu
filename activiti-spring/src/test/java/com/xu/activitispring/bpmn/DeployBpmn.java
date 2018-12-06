@@ -48,13 +48,16 @@ public class DeployBpmn {
         String name = processEngine.getName();
         String version = ProcessEngine.VERSION;
         log.info("流程引擎名称{}，流程引擎模板{}", name, version);
+        processEngine.close();
 
     }
 
     /**
      * 部署一个流程
+     * 需要注意mysql 连接驱动版本
      */
     @Test
+
     public void dy() {
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         RepositoryService repositoryService = processEngine.getRepositoryService();

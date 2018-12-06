@@ -11,6 +11,7 @@ public class ActivitiSpringApplicationTests {
 
     @Test
     public void contextLoads() {
+        System.out.println("hello...");
     }
 
 }
