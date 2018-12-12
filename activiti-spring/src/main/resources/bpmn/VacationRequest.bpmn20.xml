@@ -17,6 +17,9 @@
         </startEvent>
         <sequenceFlow id="flow1" sourceRef="request" targetRef="handleRequest"/>
 
+
+        <serviceTask id="xxx" activiti:class="com.xu.activitispring.com.xu.delegate.MyDelegate"/>
+
         <userTask id="handleRequest" name="Handle vacation request">
             <documentation>
                 ${employeeName} would like to take ${numberOfDays} day(s) of vacation (Motivation:
