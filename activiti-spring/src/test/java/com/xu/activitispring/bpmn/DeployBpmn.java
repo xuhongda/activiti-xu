@@ -48,9 +48,9 @@ public class DeployBpmn {
      */
     @Test
     public void dy() {
-        DeploymentBuilder deployment = repositoryService.createDeployment();
+        DeploymentBuilder deploymentBuilder = repositoryService.createDeployment();
 
-        Deployment deploy = deployment.name("jg")
+        Deployment deploy = deploymentBuilder.name("jg")
                 .addClasspathResource("bpmn/myOne.bpmn20.xml")
                 .deploy();
         log.info("流程部署对象:{}", deploy);
@@ -64,7 +64,7 @@ public class DeployBpmn {
     public void start() {
         Map<String, Object> variables = new HashMap<>(3);
         variables.put("employeeName", "Kermit");
-        variables.put("numberOfDays", new Integer(4));
+        variables.put("numberOfDays", 4);
         variables.put("vacationMotivation", "I'm really tired!");
 
         RuntimeService runtimeService = processEngine.getRuntimeService();

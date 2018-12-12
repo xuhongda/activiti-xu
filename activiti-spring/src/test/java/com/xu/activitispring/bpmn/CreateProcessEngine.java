@@ -34,6 +34,7 @@ public class CreateProcessEngine {
         standaloneProcessEngineConfiguration.setDatabaseSchemaUpdate("true");
         ProcessEngine processEngine = standaloneProcessEngineConfiguration.buildProcessEngine();
         log.info("{}", processEngine);
+        processEngine.close();
     }
 
     @Test
