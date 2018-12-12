@@ -3,6 +3,7 @@ package com.xu.activitispring.bpmn;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.junit.Test;
@@ -57,19 +58,13 @@ public class DeployBpmn {
      * 需要注意mysql 连接驱动版本
      */
     @Test
-
     public void dy() {
-        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-        RepositoryService repositoryService = processEngine.getRepositoryService();
-        Deployment deploy = repositoryService.createDeployment()
+        DeploymentBuilder deployment = repositoryService.createDeployment();
+
+        Deployment deploy = deployment.name("jg")
                 .addClasspathResource("bpmn/myOne.bpmn20.xml")
                 .deploy();
-
-        String name = deploy.getName();
-        Date deploymentTime = deploy.getDeploymentTime();
-        String id = deploy.getId();
-
-        log.info("流程名称：{},流程部署时间：{},流程ID:{}", name, deploymentTime, id);
+        log.info("流程部署对象:{}", deploy);
         log.info("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());
     }
 

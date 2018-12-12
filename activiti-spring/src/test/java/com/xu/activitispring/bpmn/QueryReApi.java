@@ -3,6 +3,7 @@ package com.xu.activitispring.bpmn;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
+import org.activiti.engine.repository.*;
 import org.activiti.engine.task.Task;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,11 +21,8 @@ import java.util.List;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Slf4j
-public class QuaryApi {
+public class QueryReApi {
 
-
-    @Autowired
-    private ProcessEngine processEngine;
     @Autowired
     private RepositoryService repositoryService;
     @Autowired
@@ -36,6 +34,35 @@ public class QuaryApi {
     @Autowired
     private RuntimeService runtimeService;
 
+    /**
+     * <p>
+     * repositoryService 查询
+     * </p>
+     */
+    @Test
+    public void queryRe1() {
+        //流程部署对象
+        DeploymentQuery deploymentQuery = repositoryService.createDeploymentQuery();
+        Deployment deployment = deploymentQuery.deploymentId("17501").singleResult();
+        log.info("{}", deployment);
+        List<Deployment> list = deploymentQuery.deploymentNameLike("%u%").list();
+        //创建本地 Sql 查询
+        NativeDeploymentQuery nativeDeploymentQuery = repositoryService.createNativeDeploymentQuery();
+        List<Deployment> deployments = nativeDeploymentQuery.sql("select * from act_re_deployment where NAME_ like #{name}")
+                .parameter("name", "%u%").listPage(1, 10);
+        log.info("部署集合{}", list);
+        log.info("{}", deployments);
+
+
+    }
+
+    @Test
+    public void queryRe2() {
+        //流程定义对象
+        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+        ProcessDefinition processDefinition = processDefinitionQuery.deploymentId("17501").singleResult();
+        log.info("流程定义对象：版本:{}；ID:{};name:{}", processDefinition.getVersion(), processDefinition.getId(), processDefinition.getName());
+    }
 
     @Test
     public void query() {
