@@ -1,4 +1,4 @@
-package com.xu.activitispring.bpmn;
+package com.xu.activitispring.others;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.logging.LogMDC;
