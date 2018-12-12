@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +25,7 @@ import java.util.Map;
 @Slf4j
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(locations = {"classpath:config/activiti.context.xml"})
 public class DeployBpmn {
 
     @Autowired
@@ -40,19 +41,6 @@ public class DeployBpmn {
     @Autowired
     private RuntimeService runtimeService;
 
-
-    @Test
-    public void info() {
-        //创建基于内存数据库的流程引擎对象
-        ProcessEngineConfiguration standaloneInMemProcessEngineConfiguration = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration();
-        ProcessEngine processEngine = standaloneInMemProcessEngineConfiguration.buildProcessEngine();
-        String name = processEngine.getName();
-        String version = ProcessEngine.VERSION;
-        log.info("流程引擎名称{}，流程引擎模板{}", name, version);
-        //关闭流程引擎
-        processEngine.close();
-
-    }
 
     /**
      * 部署一个流程
