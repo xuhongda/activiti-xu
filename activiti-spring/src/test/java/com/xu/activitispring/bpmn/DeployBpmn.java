@@ -49,6 +49,7 @@ public class DeployBpmn {
         String name = processEngine.getName();
         String version = ProcessEngine.VERSION;
         log.info("流程引擎名称{}，流程引擎模板{}", name, version);
+        //关闭流程引擎
         processEngine.close();
 
     }

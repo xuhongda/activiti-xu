@@ -42,11 +42,15 @@
             <property name="transactionManager" ref="transactionManager"/>
             <property name="databaseSchemaUpdate" value="true"/>
             <property name="asyncExecutorActivate" value="false"/>
+            <property name="ProcessEngineLifecycleListener" ref="myProcessEngineLifecycleListener"/>
         </bean>
 
         <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
             <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
         </bean>
+
+        <!--监听-->
+        <bean class="com.xu.config.MyProcessEngineLifecycleListener" id="myProcessEngineLifecycleListener"/>
 
 
         <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>

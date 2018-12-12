@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource(locations = {"classpath:config/activiti.cfg.xml"})
+@ImportResource(locations = {"classpath:config/activiti.context.xml"})
 public class ActivitiSpringApplication {
 
     public static void main(String[] args) {
