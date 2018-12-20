@@ -6,6 +6,7 @@
              typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath"
              targetNamespace="http://www.activiti.org/processdef">
     <process id="my_activiti_one" name="我的第一个自定义流程" isExecutable="true">
+        <documentation>xxxx</documentation>
         <startEvent id="start" name="开始">
             <extensionElements>
                 <activiti:formProperty id="startDate" name="开始时间" type="date" datePattern="MM-dd-yyyy hh:mm"
