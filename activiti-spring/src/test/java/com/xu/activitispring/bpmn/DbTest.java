@@ -1,8 +1,11 @@
 package com.xu.activitispring.bpmn;
 
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.IdentityService;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.identity.Group;
+import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.persistence.entity.ByteArrayEntityImpl;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
@@ -71,5 +74,28 @@ public class DbTest {
             a.getByteArrayEntityManager().insert(entity);
             return null;
         });
+    }
+
+    /**
+     * 用户与用户组
+     */
+    @Test
+    public void testIdentity() {
+        IdentityService identityService = processEngine.getIdentityService();
+        User user1 = identityService.newUser("user1");
+        user1.setFirstName("xu");
+        user1.setLastName("xx");
+        user1.setEmail("xx@xx.com");
+        identityService.saveUser(user1);
+        User user2 = identityService.newUser("user2");
+        identityService.saveUser(user2);
+        Group group1 = identityService.newGroup("group1");
+        group1.setName("for test");
+        identityService.saveGroup(group1);
+        //创建 Group 与 user 的关系
+        identityService.createMembership(user1.getId(), group1.getId());
+        identityService.createMembership(user2.getId(), group1.getId());
+
+        identityService.setUserInfo(user1.getId(), "age", "18");
     }
 }
