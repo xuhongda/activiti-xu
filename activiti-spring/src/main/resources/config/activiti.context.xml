@@ -49,8 +49,9 @@
             <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
         </bean>
 
-        <!--监听-->
-        <bean class="com.xu.config.MyProcessEngineLifecycleListener" id="myProcessEngineLifecycleListener"/>
+        <!--activiti监听类-->
+        <bean class="com.xu.activitispring.com.xu.listener.MyProcessEngineLifecycleListener"
+              id="myProcessEngineLifecycleListener"/>
 
 
         <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
