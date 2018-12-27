@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,13 +38,6 @@ public class RuntimeServiceTest {
     public void bf() {
         repositoryService = activitiRule.getRepositoryService();
         runtimeService = activitiRule.getRuntimeService();
-    }
-
-    @Test
-    public void getDe() {
-        DeploymentQuery deploymentQuery = repositoryService.createDeploymentQuery();
-        List<Deployment> list = deploymentQuery.orderByDeploymenTime().asc().list();
-        log.info("部署流程：{}", list);
     }
 
 
