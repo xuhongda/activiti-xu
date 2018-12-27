@@ -2,16 +2,20 @@ package com.xu.activitispring.bpmn;
 
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
-import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.activiti.engine.repository.*;
-import org.activiti.engine.task.Task;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -39,7 +43,6 @@ public class RepositoryServiceTest {
      * 在 act_ge_bytearray 表中会留下部署文件 x.bpmn20.xml 和 x.png 信息
      * ...
      * 在 act_re_xxx  表
-     *
      * </p>
      */
     @Test
@@ -51,6 +54,24 @@ public class RepositoryServiceTest {
                 .deploy();
         log.info("流程部署对象:{}", deploy);
         log.info("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());
+    }
+
+    /**
+     * 根据inputStream输入流部署
+     *
+     * @throws Exception
+     */
+    @Test
+    public void inputStreamFromAbsolutePathTest() throws Exception {
+        Resource resource = new ClassPathResource("bpmn/myOne.bpmn20.xml");
+        if (resource.exists()) {
+            InputStream inputStream = resource.getInputStream();
+            repositoryService.createDeployment().addInputStream("myOne.bpmn20.xml", inputStream).deploy();
+            //验证部署是否成功
+            ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
+            long count = processDefinitionQuery.processDefinitionKey("my_activiti_one").count();
+            log.info("key 为my_activiti_one 的流程部署次数：{}", count);
+        }
     }
 
 
@@ -67,6 +88,14 @@ public class RepositoryServiceTest {
         }
         //需要用 activateProcessDefinitionXXX 激活
         repositoryService.activateProcessDefinitionByKey("vacationRequest");
+    }
+
+    /**
+     * 删除流程
+     */
+    @Test
+    public void delete() {
+        repositoryService.deleteDeployment("15001", true);
     }
 
 
@@ -91,16 +120,6 @@ public class RepositoryServiceTest {
 
 
     }
-
-    @Test
-    public void queryRe2() {
-        //流程定义对象
-        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
-        ProcessDefinition processDefinition = processDefinitionQuery.deploymentId("17501").singleResult();
-        log.info("流程定义对象：版本:{}；ID:{};name:{}", processDefinition.getVersion(), processDefinition.getId(), processDefinition.getName());
-    }
-
-
 
 
 }
