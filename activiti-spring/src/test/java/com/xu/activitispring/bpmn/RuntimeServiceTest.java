@@ -8,14 +8,10 @@ import org.activiti.engine.repository.DeploymentQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceBuilder;
 import org.activiti.engine.test.ActivitiRule;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +48,10 @@ public class RuntimeServiceTest {
         log.info("部署流程：{}", list);
     }
 
+
+    /**
+     * 启动流程实例时带上参数
+     */
     @Test
     public void start() {
         Map<String, Object> map = new HashMap<>();
@@ -62,15 +62,59 @@ public class RuntimeServiceTest {
         ProcessInstance processInstance = runtimeService.startProcessInstanceById(id, map);
         log.info("启动流程：{}", processInstance);
 
+        // 流程启动后获取变量
+        Map<String, Object> variables = runtimeService.getVariables(processInstance.getId());
+        log.info("{}", variables);
+        // 设置变量
+        runtimeService.setVariable(processInstance.getId(), "key3", "value3");
+
 
     }
 
+    /**
+     * 根据ProcessInstanceBuilder启动流程实例
+     */
     @Test
     @org.activiti.engine.test.Deployment(resources = {"bpmn/VacationRequest.bpmn20.xml"})
     public void start2() {
         ProcessInstanceBuilder processInstanceBuilder = runtimeService.createProcessInstanceBuilder().businessKey("buyBook").variable("name", "xu");
-        ProcessInstance processInstance = processInstanceBuilder.start();
-
+        ProcessInstance processInstance = processInstanceBuilder.processDefinitionKey("vacationRequest").start();
         log.info("{}", processInstance);
     }
+
+    /**
+     * 流程的挂起和激活
+     */
+    @Test
+    public void suspendAndActivateTest() {
+
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processDefinitionKey("vacationRequest")
+                .variableValueEquals("key1", "v1").list().get(0);
+        String processInstanceId = processInstance.getProcessInstanceId();
+
+        System.out.println(processInstance.isSuspended());
+        //挂起流程实例
+        runtimeService.suspendProcessInstanceById(processInstanceId);
+        //验证是否挂起
+        Assert.assertTrue(runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().isSuspended());
+
+        //激活流程实例
+        runtimeService.activateProcessInstanceById(processInstanceId);
+        //验证是否激活
+        Assert.assertTrue(!runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().isSuspended());
+    }
+
+
+    /**
+     * 流程实例的删除
+     */
+    @Test
+    public void deleteProcessInstanceTest() {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processDefinitionKey("vacationRequest").variableValueEquals("key1", "v1").list().get(0);
+        String processInstanceId = processInstance.getProcessInstanceId();
+        runtimeService.deleteProcessInstance(processInstanceId, "删除测试");
+    }
+
+
+
 }

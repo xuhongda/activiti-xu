@@ -27,14 +27,48 @@ public class RepositoryServiceTest {
 
     @Autowired
     private RepositoryService repositoryService;
-    @Autowired
-    private TaskService taskService;
-    @Autowired
-    private HistoryService historyService;
-    @Autowired
-    private ManagementService managementService;
+
     @Autowired
     private RuntimeService runtimeService;
+
+
+    /**
+     * 部署一个流程
+     * 需要注意mysql 连接驱动版本
+     * <p>
+     * 在 act_ge_bytearray 表中会留下部署文件 x.bpmn20.xml 和 x.png 信息
+     * ...
+     * 在 act_re_xxx  表
+     *
+     * </p>
+     */
+    @Test
+    public void dy() {
+        DeploymentBuilder deploymentBuilder = repositoryService.createDeployment();
+
+        Deployment deploy = deploymentBuilder.name("jg")
+                .addClasspathResource("bpmn/VacationRequest.bpmn20.xml")
+                .deploy();
+        log.info("流程部署对象:{}", deploy);
+        log.info("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());
+    }
+
+
+    /**
+     * 暂停一个任务,任务被暂停又被开启，会抛出异常
+     */
+    @Test
+    public void suspended() {
+        repositoryService.suspendProcessDefinitionByKey("vacationRequest");
+        try {
+            runtimeService.startProcessInstanceByKey("vacationRequest");
+        } catch (ActivitiException e) {
+            e.printStackTrace();
+        }
+        //需要用 activateProcessDefinitionXXX 激活
+        repositoryService.activateProcessDefinitionByKey("vacationRequest");
+    }
+
 
     /**
      * <p>
@@ -66,27 +100,7 @@ public class RepositoryServiceTest {
         log.info("流程定义对象：版本:{}；ID:{};name:{}", processDefinition.getVersion(), processDefinition.getId(), processDefinition.getName());
     }
 
-    @Test
-    public void query() {
-        List<Task> tasks = taskService.createTaskQuery()
-                .taskAssignee("kermit")
-                .processVariableValueEquals("orderId", "0815")
-                .orderByTaskDueDate().asc()
-                .list();
-        log.info("任务列表{}", tasks);
-    }
 
-    @Test
-    public void queryBySql() {
-        List<Task> tasks = taskService.createNativeTaskQuery()
-                .sql("SELECT count(*) FROM " + managementService.getTableName(Task.class) + " T WHERE T.NAME_ = #{taskName}")
-                .parameter("taskName", "gonzoTask")
-                .list();
-        log.info("任务列表{}", tasks);
-        long count = taskService.createNativeTaskQuery()
-                .sql("SELECT count(*) FROM " + managementService.getTableName(Task.class) + " T1, "
-                        + managementService.getTableName(VariableInstanceEntity.class) + " V1 WHERE V1.TASK_ID_ = T1.ID_")
-                .count();
-        log.info("{}", count);
-    }
+
+
 }
