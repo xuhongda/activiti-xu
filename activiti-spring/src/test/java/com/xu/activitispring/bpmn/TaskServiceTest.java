@@ -7,6 +7,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskInfo;
 import org.activiti.engine.task.TaskQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,21 +43,12 @@ public class TaskServiceTest {
 
 
     /**
-     * 查询出所欲任务
+     * 查询出所有任务
      */
     @Test
     public void getAll() {
         List<Task> tasks = taskService.createTaskQuery().list();
         log.info("{}", tasks.size());
-    }
-
-    @Test
-    public void test2() {
-        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().list();
-        log.info("ProcessDefinition——id:{}", list.get(1).getId());
-        List<Task> tasks = taskService.createTaskQuery().processDefinitionId(list.get(1).getId()).list();
-        tasks.forEach(t -> log.info(t.getName(), t.getAssignee(), t.getExecutionId()));
-
     }
 
 
@@ -71,6 +63,7 @@ public class TaskServiceTest {
             log.info("Task available: " + task.getName());
         }
         log.info("任务数量{}", tasks.size());
+        tasks.forEach(t -> log.info(t.getName(), t.getId(), t.getAssignee()));
     }
 
     @Test
@@ -109,14 +102,12 @@ public class TaskServiceTest {
         for (Task task : tasks) {
             log.info("Task available: " + task.getName());
         }
-
         Task task = tasks.get(0);
-
         Map<String, Object> taskVariables = new HashMap<>();
         taskVariables.put("vacationApproved", "false");
         taskVariables.put("managerMotivation", "We have a tight deadline!");
         taskService.complete(task.getId(), taskVariables);
-
+        log.info("流程被审批 id为： {}", task.getId());
     }
 
 

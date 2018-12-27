@@ -23,7 +23,7 @@ public class MyProcessEngineLifecycleListener implements ProcessEngineLifecycleL
      */
     @Override
     public void onProcessEngineBuilt(ProcessEngine processEngine) {
-        log.info("流程引擎开启{}", processEngine.toString());
+        log.info("流程引擎{}开启", processEngine.getName());
     }
 
     /**
@@ -33,6 +33,6 @@ public class MyProcessEngineLifecycleListener implements ProcessEngineLifecycleL
      */
     @Override
     public void onProcessEngineClosed(ProcessEngine processEngine) {
-        log.info("流程引擎关闭{}", processEngine.toString());
+        log.info("流程引擎{}关闭", processEngine.getName());
     }
 }

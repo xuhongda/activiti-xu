@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * activiti-xu
  */
 @Slf4j
-/*@ContextConfiguration(locations = {"classpath:config/activiti.context.xml"})*/
+/*@ContextConfiguration(locations = {"classpath:listener/activiti.context.xml"})*/
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class CreateProcessEngine {
