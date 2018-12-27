@@ -32,12 +32,17 @@ public class DbTest {
     @Autowired
     private ProcessEngine processEngine;
 
+    @Autowired
+    private ManagementService managementService;
+
+    @Autowired
+    private IdentityService identityService;
+
     /**
      * 创建表结构
      */
     @Test
     public void test() {
-        ManagementService managementService = processEngine.getManagementService();
         Map<String, Long> tableCount = managementService.getTableCount();
         Set<String> strings = tableCount.keySet();
         //注意这个{@link org.assertj.core.util.Lists} 对象 ，这个方法还蛮好用
@@ -54,7 +59,6 @@ public class DbTest {
      */
     @Test
     public void dropTable() {
-        ManagementService managementService = processEngine.getManagementService();
         managementService.executeCommand(a -> {
             a.getDbSqlSession().dbSchemaDrop();
             return null;
@@ -66,7 +70,6 @@ public class DbTest {
      */
     @Test
     public void testByteArray() {
-        ManagementService managementService = processEngine.getManagementService();
         managementService.executeCommand(a -> {
             ByteArrayEntityImpl entity = new ByteArrayEntityImpl();
             entity.setName("test");
@@ -81,7 +84,6 @@ public class DbTest {
      */
     @Test
     public void testIdentity() {
-        IdentityService identityService = processEngine.getIdentityService();
         User user1 = identityService.newUser("user1");
         user1.setFirstName("xu");
         user1.setLastName("xx");
