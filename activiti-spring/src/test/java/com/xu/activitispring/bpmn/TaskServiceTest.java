@@ -6,9 +6,12 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.task.Attachment;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskInfo;
 import org.activiti.engine.task.TaskQuery;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +33,6 @@ import java.util.Map;
 @ContextConfiguration("classpath:config/activiti.context.xml")
 @Slf4j
 public class TaskServiceTest {
-
-
-    @Autowired
-    private RepositoryService repositoryService;
 
     @Autowired
     private TaskService taskService;
@@ -73,7 +72,8 @@ public class TaskServiceTest {
                 .processVariableValueEquals("orderId", "0815")
                 .orderByTaskDueDate().asc()
                 .list();
-        log.info("任务列表{}", tasks);
+        //一个commons api {@link ToStringStyle}
+        log.info("任务列表={}", ToStringBuilder.reflectionToString(tasks, ToStringStyle.JSON_STYLE));
     }
 
 

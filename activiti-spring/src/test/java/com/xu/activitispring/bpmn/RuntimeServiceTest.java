@@ -51,7 +51,10 @@ public class RuntimeServiceTest {
         map.put("key2", "v2");
         String id = repositoryService.createProcessDefinitionQuery().latestVersion().singleResult().getId();
         log.info("部署ID:{}", id);
-        ProcessInstance processInstance = runtimeService.startProcessInstanceById(id, map);
+        // ProcessInstance processInstance = runtimeService.startProcessInstanceById(id, map);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("vacationRequest");
+        //runtimeService.startProcessInstanceByKeyAndTenantId("","");
+        //runtimeService.startProcessInstanceByMessage("");
         log.info("启动流程：{}", processInstance);
 
         // 流程启动后获取变量

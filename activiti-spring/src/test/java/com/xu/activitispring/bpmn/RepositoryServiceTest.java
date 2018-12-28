@@ -3,18 +3,17 @@ package com.xu.activitispring.bpmn;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.*;
 import org.activiti.engine.repository.*;
-import org.junit.Assert;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -39,6 +38,7 @@ public class RepositoryServiceTest {
     /**
      * 部署一个流程
      * 需要注意mysql 连接驱动版本
+     * 一个流程可以多次部署,版本号会发生增加，当启动流程时会启动最大的版本号版本
      * <p>
      * 在 act_ge_bytearray 表中会留下部署文件 x.bpmn20.xml 和 x.png 信息
      * ...
@@ -49,7 +49,8 @@ public class RepositoryServiceTest {
     public void dy() {
         DeploymentBuilder deploymentBuilder = repositoryService.createDeployment();
 
-        Deployment deploy = deploymentBuilder.name("jg")
+        Deployment deploy = deploymentBuilder.name("VacationRequest")
+                .key("VacationRequest")
                 .addClasspathResource("bpmn/VacationRequest.bpmn20.xml")
                 .deploy();
         log.info("流程部署对象:{}", deploy);
@@ -74,6 +75,7 @@ public class RepositoryServiceTest {
         }
     }
 
+    //TODO: 根据 zip 包部署
 
     /**
      * 暂停一个任务,任务被暂停又被开启，会抛出异常
@@ -88,14 +90,6 @@ public class RepositoryServiceTest {
         }
         //需要用 activateProcessDefinitionXXX 激活
         repositoryService.activateProcessDefinitionByKey("vacationRequest");
-    }
-
-    /**
-     * 删除流程
-     */
-    @Test
-    public void delete() {
-        repositoryService.deleteDeployment("15001", true);
     }
 
 
@@ -118,8 +112,24 @@ public class RepositoryServiceTest {
         log.info("部署集合{}", list);
         log.info("{}", deployments);
 
-
     }
 
+
+    /**
+     * 删除已部署的流程
+     */
+    @Test
+    public void delete() {
+        List<Deployment> deployments = repositoryService.createDeploymentQuery().deploymentKey("VacationRequest").list();
+        log.info("数量={},", deployments.size());
+        deployments.forEach(d -> log.info("流程部署信息={}", ToStringBuilder.reflectionToString(d, ToStringStyle.JSON_STYLE)));
+        //删除key重复的流程
+        if (deployments.size() > 1) {
+            for (int i = 0; i < deployments.size() - 1; i++) {
+                repositoryService.deleteDeployment(deployments.get(i).getId(), true);
+            }
+        }
+
+    }
 
 }
